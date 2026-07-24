@@ -56,7 +56,7 @@ import FooterPage from "./components/FooterPage.vue";
   background-color: rgba(99, 102, 241, 0.3) !important;
 }
 
-/* 1. Полностью очищаем внешний контейнер, который создает Vuetify */
+/* Полностью очищаем внешний контейнер, который создает Vuetify */
 .v-overlay-container .v-autocomplete__content,
 .v-overlay-container .v-overlay__content {
   box-shadow: none !important;
@@ -65,18 +65,13 @@ import FooterPage from "./components/FooterPage.vue";
   border-radius: 12px !important;
 }
 
-/* 2. Делаем сам список плотным, без полупрозрачности и без размытия */
+/* Делаем сам список плотным, без полупрозрачности и без размытия */
 .v-overlay-container .v-autocomplete__content .v-list {
-  background-color: #0f172a !important; /* Чистый плотный цвет без RGBA */
-  backdrop-filter: none !important; /* Полностью отключаем блюр, который ломал углы */
+  background-color: #0f172a !important;
+  backdrop-filter: none !important;
   border: 1px solid rgba(71, 85, 105, 0.5) !important;
   border-radius: 12px !important;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important; /* Мягкая аккуратная тень */
   overflow: hidden !important;
-}
-
-/* 3. Дублируем сброс внутренних теней Vuetify */
-.v-overlay-container .v-autocomplete__content .v-list * {
-  box-shadow: none !important;
 }
 </style>

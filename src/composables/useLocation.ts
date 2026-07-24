@@ -7,7 +7,6 @@ type useLocationType = {
   longitude: Ref<number | null>;
   address: Ref<string>;
   isLoading: Ref<boolean>;
-  error: Ref<string | null, string | null>;
   initGeolocation: () => void;
 };
 
@@ -16,7 +15,6 @@ export function useLocation(): useLocationType {
   const longitude = ref<number | null>(null);
   const address = ref<string>("");
   const isLoading = ref(false);
-  const error = ref<string | null>(null);
 
   // Внутренний метод: запуск цепочки определения адреса
   async function resolveAddress() {
@@ -37,20 +35,19 @@ export function useLocation(): useLocationType {
         }
       }
     } catch (err) {
-      // Шаг 3: Тотальный Fallback, если упал и Яндекс, и DaData
-      address.value = "Запасной фоллбэк: Москва, Россия";
+      // Тотальный Fallback, если упал и Яндекс, и DaData. Запасной фоллбэк:
+      address.value = "Россия, Москва";
       if (err instanceof Error) {
-        error.value = err.message;
+        console.error(err.message);
       }
     }
   }
 
   function initGeolocation() {
     isLoading.value = true;
-    error.value = null;
 
     if (!navigator.geolocation) {
-      error.value = "Геолокация не поддерживается браузером";
+      console.warn("Геолокация не поддерживается браузером");
       resolveAddress().finally(() => (isLoading.value = false));
       return;
     }
@@ -68,5 +65,5 @@ export function useLocation(): useLocationType {
     );
   }
 
-  return { latitude, longitude, address, isLoading, error, initGeolocation };
+  return { latitude, longitude, address, isLoading, initGeolocation };
 }

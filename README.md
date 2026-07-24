@@ -48,7 +48,7 @@ npm install
    cp .env.example .env
    ```
    _(Для Windows в PowerShell: `copy .env.example .env`)_
-2. Откройте созданный файл `.env` и вставьте ваш личные API-ключи
+2. Откройте созданный файл `.env` и вставьте ваши личные API-ключи
 
 ```ini
 # API ключ для OpenWeatherMap (Погода)
