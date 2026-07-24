@@ -43,6 +43,7 @@
 import { ref, watch } from "vue";
 import { fetchCitySuggestions, type SuggestedCity } from "@/api/dadata.service";
 import { useWeather } from "@/composables/useWeather";
+import { debounce } from "@/utils/common";
 
 import WeatherCard from "@/components/WeatherCard.vue";
 
@@ -63,17 +64,20 @@ const selectedCityCoords = ref<SuggestedCity | null>(null);
 const isSearchLoading = ref(false);
 const searchErrorText = ref<string | null>(null);
 
-watch(searchInput, async (newQuery) => {
-  if (!newQuery || newQuery.length < 2) {
-    citiesItems.value = [];
-    searchErrorText.value = null;
-    return;
+let searchAbortController: AbortController | null = null;
+
+const debouncedFetchCities = debounce(async (query: string) => {
+  if (searchAbortController) {
+    searchAbortController.abort();
   }
+  searchAbortController = new AbortController();
   try {
-    isSearchLoading.value = true;
-    searchErrorText.value = null;
-    citiesItems.value = await fetchCitySuggestions(newQuery);
-  } catch (searchError: unknown) {
+    citiesItems.value = await fetchCitySuggestions(
+      query,
+      searchAbortController.signal,
+    );
+    searchAbortController = null;
+  } catch (searchError) {
     citiesItems.value = [];
     if (searchError instanceof Error) {
       searchErrorText.value = searchError.message;
@@ -81,9 +85,24 @@ watch(searchInput, async (newQuery) => {
       searchErrorText.value = "Произошла ошибка при поиске городов";
     }
     console.error(searchError);
+    searchAbortController = null;
   } finally {
     isSearchLoading.value = false;
   }
+}, 350);
+
+watch(searchInput, (newQuery) => {
+  if (!newQuery || newQuery.trim().length < 2) {
+    citiesItems.value = [];
+    isSearchLoading.value = false;
+    if (searchAbortController) {
+      searchAbortController.abort();
+      searchAbortController = null;
+    }
+    return;
+  }
+  isSearchLoading.value = true;
+  debouncedFetchCities(newQuery);
 });
 
 watch(selectedCityCoords, (newCity: SuggestedCity | null) => {

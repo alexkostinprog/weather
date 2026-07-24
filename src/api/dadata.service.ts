@@ -66,6 +66,7 @@ interface DaDataSuggestionItem {
 
 export async function fetchCitySuggestions(
   query: string,
+  signal?: AbortSignal,
 ): Promise<SuggestedCity[]> {
   if (!query || query.trim().length < 2) return [];
 
@@ -79,6 +80,7 @@ export async function fetchCitySuggestions(
         count: 5, // Достаточно топ-5 совпадений
       },
       {
+        signal,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
